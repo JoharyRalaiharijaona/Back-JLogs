@@ -5,23 +5,49 @@ import { PrismaService } from '../../prisma/prisma.service';
 export class ReservationService {
   constructor(private prisma: PrismaService) {}
 
-  async create(dto: { userId: number; equipmentId: number; startDate: string; endDate: string }) {
+  async create(dto: {
+    clientId: number;
+    equipmentIds: number[];
+    eventName: string;
+    startDate: string;
+    endDate: string;
+    status: string;
+    location: string;
+    contactPerson: string;
+    contactEmail: string;
+    contactPhone: string;
+    totalValue: number;
+    notes?: string;
+  }) {
     return this.prisma.reservation.create({
       data: {
-        userId: dto.userId,
-        equipmentId: dto.equipmentId,
+        client: { connect: { id: dto.clientId } },
+        eventName: dto.eventName,
         startDate: new Date(dto.startDate),
         endDate: new Date(dto.endDate),
-        status: 'pending',
+        status: dto.status,
+        location: dto.location,
+        contactPerson: dto.contactPerson,
+        contactEmail: dto.contactEmail,
+        contactPhone: dto.contactPhone,
+        totalValue: dto.totalValue,
+        notes: dto.notes,
+        equipments: {
+          create: dto.equipmentIds.map(equipmentId => ({ equipment: { connect: { id: equipmentId } } }))
+        }
       },
+      include: {
+        client: true,
+        equipments: { include: { equipment: true } }
+      }
     });
   }
 
   async findAll() {
     return this.prisma.reservation.findMany({
       include: {
-        user: { select: { id: true, name: true, email: true } },
-        equipment: { select: { id: true, name: true } },
+        client: true,
+        equipments: { include: { equipment: true } }
       },
     });
   }
@@ -30,8 +56,8 @@ export class ReservationService {
     return this.prisma.reservation.findUnique({
       where: { id },
       include: {
-        user: { select: { id: true, name: true, email: true } },
-        equipment: { select: { id: true, name: true } },
+        client: true,
+        equipments: { include: { equipment: true } }
       },
     });
   }
@@ -51,4 +77,3 @@ export class ReservationService {
     return this.prisma.reservation.delete({ where: { id } });
   }
 }
-

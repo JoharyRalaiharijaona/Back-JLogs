@@ -7,7 +7,20 @@ export class ReservationController {
 
   // Créer une réservation
   @Post()
-  async create(@Body() dto: { userId: number; equipmentId: number; startDate: string; endDate: string }) {
+  async create(@Body() dto: {
+    clientId: number;
+    equipmentIds: number[];
+    eventName: string;
+    startDate: string;
+    endDate: string;
+    status: string;
+    location: string;
+    contactPerson: string;
+    contactEmail: string;
+    contactPhone: string;
+    totalValue: number;
+    notes?: string;
+  }) {
     return this.reservationService.create(dto);
   }
 
@@ -35,4 +48,3 @@ export class ReservationController {
     return this.reservationService.remove(Number(id));
   }
 }
-
