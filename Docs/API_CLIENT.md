@@ -14,7 +14,7 @@
 [
   {
     "id": 1,
-    "name": "Client 1",
+    "nom": "Client 1",
     "email": "client1@example.com",
     "fonction": "Directeur",
     "NIF": "123456",
@@ -30,7 +30,7 @@
 ```json
 {
   "id": 1,
-  "name": "Client 1",
+  "nom": "Client 1",
   "email": "client1@example.com",
   "fonction": "Directeur",
   "NIF": "123456",
@@ -44,7 +44,7 @@
 - **Body :**
 ```json
 {
-  "name": "Client 1",
+  "nom": "Client 1",
   "email": "client1@example.com",
   "fonction": "Directeur",
   "NIF": "123456",
@@ -56,7 +56,7 @@
 ```json
 {
   "id": 1,
-  "name": "Client 1",
+  "nom": "Client 1",
   "email": "client1@example.com",
   "fonction": "Directeur",
   "NIF": "123456",
@@ -67,19 +67,19 @@
 
 ### 4. Modifier un client
 - **PATCH** `/api/clients/{id}`
-- **Body :**
+- **Body :** (tous les champs sont optionnels)
 ```json
 {
-  "name": "Client 1 modifié"
+  "fonction": "Responsable"
 }
 ```
 - **Réponse :**
 ```json
 {
   "id": 1,
-  "name": "Client 1 modifié",
+  "nom": "Client 1",
   "email": "client1@example.com",
-  "fonction": "Directeur",
+  "fonction": "Responsable",
   "NIF": "123456",
   "STAT": "78910",
   "avatar": "url_avatar"
@@ -91,7 +91,13 @@
 - **Réponse :**
 ```json
 {
-  "message": "Client supprimé avec succès"
+  "id": 1,
+  "nom": "Client 1",
+  "email": "client1@example.com",
+  "fonction": "Responsable",
+  "NIF": "123456",
+  "STAT": "78910",
+  "avatar": "url_avatar"
 }
 ```
 
@@ -101,7 +107,7 @@
 ```json
 {
   "id": "number",
-  "name": "string",
+  "nom": "string",
   "email": "string",
   "fonction": "string",
   "NIF": "string",
@@ -111,6 +117,5 @@
 ```
 
 ## Remarques
-- Tous les champs sont obligatoires lors de la création.
-- Les champs peuvent être partiellement modifiés avec PATCH.
-
+- Les champs exacts dépendent de votre modèle Prisma.
+- Adapter les exemples selon vos besoins réels.

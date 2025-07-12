@@ -14,8 +14,11 @@
 [
   {
     "id": 1,
-    "name": "John Doe",
-    "email": "john@example.com"
+    "nom": "Jean Dupont",
+    "email": "jean@example.com",
+    "role": "utilisateur",
+    "avatar": "url_avatar",
+    "creeLe": "2025-07-12T10:00:00.000Z"
   }
 ]
 ```
@@ -26,43 +29,93 @@
 ```json
 {
   "id": 1,
-  "name": "John Doe",
-  "email": "john@example.com"
+  "nom": "Jean Dupont",
+  "email": "jean@example.com",
+  "role": "utilisateur",
+  "avatar": "url_avatar",
+  "creeLe": "2025-07-12T10:00:00.000Z"
 }
 ```
 
-### 3. Créer un utilisateur
+### 3. Inscription d'un utilisateur
 - **POST** `/api/users/register`
 - **Body :**
 ```json
 {
-  "name": "John Doe",
-  "email": "john@example.com",
-  "password": "motdepasse"
+  "nom": "Jean Dupont",
+  "email": "jean@example.com",
+  "motDePasse": "motdepasse",
+  "avatar": "url_avatar"
 }
 ```
 - **Réponse :**
 ```json
 {
   "id": 1,
-  "name": "John Doe",
-  "email": "john@example.com"
+  "nom": "Jean Dupont",
+  "email": "jean@example.com",
+  "role": "utilisateur",
+  "avatar": "url_avatar",
+  "creeLe": "2025-07-12T10:00:00.000Z"
 }
 ```
 
-### 4. Connexion utilisateur
+### 4. Connexion d'un utilisateur
 - **POST** `/api/users/login`
 - **Body :**
 ```json
 {
-  "email": "john@example.com",
-  "password": "motdepasse"
+  "email": "jean@example.com",
+  "motDePasse": "motdepasse"
 }
 ```
 - **Réponse :**
 ```json
 {
-  "access_token": "jwt.token.here"
+  "token": "jwt_token",
+  "user": {
+    "id": 1,
+    "nom": "Jean Dupont",
+    "email": "jean@example.com",
+    "role": "utilisateur"
+  }
+}
+```
+
+### 5. Mettre à jour un utilisateur
+- **PATCH** `/api/users/{id}`
+- **Body :**
+```json
+{
+  "nom": "Nouveau Nom",
+  "email": "nouveau@email.com",
+  "motDePasse": "nouveaumotdepasse",
+  "avatar": "nouvel_url_avatar"
+}
+```
+- **Réponse :**
+```json
+{
+  "id": 1,
+  "nom": "Nouveau Nom",
+  "email": "nouveau@email.com",
+  "role": "utilisateur",
+  "avatar": "nouvel_url_avatar",
+  "creeLe": "2025-07-12T10:00:00.000Z"
+}
+```
+
+### 6. Supprimer un utilisateur
+- **DELETE** `/api/users/{id}`
+- **Réponse :**
+```json
+{
+  "id": 1,
+  "nom": "Jean Dupont",
+  "email": "jean@example.com",
+  "role": "utilisateur",
+  "avatar": "url_avatar",
+  "creeLe": "2025-07-12T10:00:00.000Z"
 }
 ```
 
@@ -72,12 +125,14 @@
 ```json
 {
   "id": "number",
-  "name": "string",
-  "email": "string"
+  "nom": "string",
+  "email": "string",
+  "role": "string",
+  "avatar": "string",
+  "creeLe": "string"
 }
 ```
 
 ## Remarques
-- Le mot de passe n'est jamais retourné dans les réponses.
-- L'authentification utilise un token JWT.
-
+- Les champs exacts dépendent de votre modèle Prisma.
+- Adapter les exemples selon vos besoins réels.

@@ -7,24 +7,25 @@ import * as jwt from 'jsonwebtoken';
 export class UserService {
   constructor(private prisma: PrismaService) {}
 
-  async register(dto: { email: string; password: string; name: string }) {
-    const hashedPassword = await bcrypt.hash(dto.password, 10);
-    const user = await this.prisma.user.create({
+  async register(dto: { email: string; motDePasse: string; nom: string; avatar?: string }) {
+    const hashedPassword = await bcrypt.hash(dto.motDePasse, 10);
+    const user = await this.prisma.utilisateur.create({
       data: {
         email: dto.email,
-        password: hashedPassword,
-        name: dto.name,
-        role: 'user',
+        motDePasse: hashedPassword,
+        nom: dto.nom,
+        avatar: dto.avatar || '',
+        role: 'utilisateur',
       },
-      select: { id: true, email: true, name: true, role: true, createdAt: true },
+      select: { id: true, email: true, nom: true, role: true, avatar: true, creeLe: true },
     });
     return user;
   }
 
-  async login(dto: { email: string; password: string }) {
-    const user = await this.prisma.user.findUnique({ where: { email: dto.email } });
+  async login(dto: { email: string; motDePasse: string }) {
+    const user = await this.prisma.utilisateur.findUnique({ where: { email: dto.email } });
     if (!user) return null;
-    const valid = await bcrypt.compare(dto.password, user.password);
+    const valid = await bcrypt.compare(dto.motDePasse, user.motDePasse);
     if (!valid) return null;
     // Générer un JWT
     const token = jwt.sign(
@@ -34,21 +35,43 @@ export class UserService {
     );
     return {
       token,
-      user: { id: user.id, email: user.email, name: user.name, role: user.role },
+      user: { id: user.id, email: user.email, nom: user.nom, role: user.role },
     };
   }
 
   async findAll() {
-    return this.prisma.user.findMany({
-      select: { id: true, email: true, name: true, role: true, createdAt: true },
+    return this.prisma.utilisateur.findMany({
+      select: { id: true, email: true, nom: true, role: true, creeLe: true },
     });
   }
 
   async findOne(id: number) {
-    return this.prisma.user.findUnique({
+    return this.prisma.utilisateur.findUnique({
       where: { id },
-      select: { id: true, email: true, name: true, role: true, createdAt: true },
+      select: { id: true, email: true, nom: true, role: true, creeLe: true },
+    });
+  }
+
+  async update(id: number, dto: { nom?: string; email?: string; motDePasse?: string; avatar?: string }) {
+    const data: any = { ...dto };
+    if (dto.motDePasse) {
+      data.motDePasse = await bcrypt.hash(dto.motDePasse, 10);
+    }
+    delete data.motDePasse;
+    if (dto.motDePasse) {
+      data.motDePasse = await bcrypt.hash(dto.motDePasse, 10);
+    }
+    return this.prisma.utilisateur.update({
+      where: { id },
+      data,
+      select: { id: true, email: true, nom: true, role: true, avatar: true, creeLe: true },
+    });
+  }
+
+  async remove(id: number) {
+    return this.prisma.utilisateur.delete({
+      where: { id },
+      select: { id: true, email: true, nom: true, role: true, avatar: true, creeLe: true },
     });
   }
 }
-

@@ -9,16 +9,15 @@ export class ReservationController {
   @Post()
   async create(@Body() dto: {
     clientId: number;
-    equipmentIds: number[];
-    eventName: string;
-    startDate: string;
-    endDate: string;
-    status: string;
-    location: string;
-    contactPerson: string;
+    materiels: { materielId: number; quantite: number }[];
+    nomEvenement: string;
+    dateDebut: string;
+    dateFin: string;
+    statut: string;
+    lieu: string;
+    contactNom: string;
     contactEmail: string;
-    contactPhone: string;
-    totalValue: number;
+    contactTelephone: string;
     notes?: string;
   }) {
     return this.reservationService.create(dto);
@@ -38,7 +37,7 @@ export class ReservationController {
 
   // Modifier une réservation (statut, dates...)
   @Patch(':id')
-  async update(@Param('id') id: string, @Body() dto: { startDate?: string; endDate?: string; status?: string }) {
+  async update(@Param('id') id: string, @Body() dto: { dateDebut?: string; dateFin?: string; statut?: string }) {
     return this.reservationService.update(Number(id), dto);
   }
 

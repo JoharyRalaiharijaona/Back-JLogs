@@ -10,84 +10,140 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id           Int        @id @default(autoincrement())
-  email        String     @unique
-  password     String
-  name         String
-  role         String // admin, technicien, utilisateur
-  avatar       String
-  lastActivity DateTime?
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @updatedAt
-  activities   Activity[]
+model Utilisateur {
+  id               Int        @id @default(autoincrement())
+  email            String     @unique
+  motDePasse       String
+  nom              String
+  role             String // admin, technicien, utilisateur
+  avatar           String
+  derniereActivite DateTime?
+  creeLe           DateTime   @default(now())
+  modifieLe        DateTime   @updatedAt
+  activites        Activite[]
 }
 
-model Equipment {
-  id              Int                      @id @default(autoincrement())
-  name            String
-  category        String
-  status          String
-  condition       String
-  location        String
-  purchaseDate    DateTime
-  lastMaintenance DateTime
-  serialNumber    String
-  value           Int
-  image           String
-  createdAt       DateTime                 @default(now())
-  updatedAt       DateTime                 @updatedAt
-  reservations    ReservationOnEquipment[]
-  activities      Activity[]
+model Materiel {
+  id                  Int                      @id @default(autoincrement())
+  nom                 String
+  categorie           String
+  statut              String
+  etat                String
+  emplacement         String
+  dateAchat           DateTime
+  derniereMaintenance DateTime
+  numeroSerie         String
+  valeur              Int
+  image               String
+  prix                Decimal                  @default(0)
+  creeLe              DateTime                 @default(now())
+  modifieLe           DateTime                 @updatedAt
+  reservations        ReservationSurMateriel[]
+  activites           Activite[]
 }
 
 model Client {
   id           Int           @id @default(autoincrement())
-  name         String
+  nom          String?
   email        String        @unique
   fonction     String
   NIF          String
   STAT         String
   avatar       String
   reservations Reservation[]
+  Devis        Devis[]
+  factures     Facture[]
 }
 
 model Reservation {
-  id            Int                      @id @default(autoincrement())
-  client        Client                   @relation(fields: [clientId], references: [id])
-  clientId      Int
-  eventName     String
-  startDate     DateTime
-  endDate       DateTime
-  status        String
-  location      String
-  contactPerson String
-  contactEmail  String
-  contactPhone  String
-  totalValue    Int
-  notes         String?
-  createdAt     DateTime                 @default(now())
-  updatedAt     DateTime                 @updatedAt
-  equipments    ReservationOnEquipment[]
+  id               Int                      @id @default(autoincrement())
+  client           Client                   @relation(fields: [clientId], references: [id])
+  clientId         Int
+  nomEvenement     String?
+  dateDebut        DateTime?
+  dateFin          DateTime?
+  statut           String?
+  lieu             String?
+  contactNom       String?
+  contactEmail     String
+  contactTelephone String?
+  valeurTotale     Int?
+  notes            String?
+  creeLe           DateTime                 @default(now())
+  modifieLe        DateTime?
+  materiels        ReservationSurMateriel[]
+  devis            Devis[]
+  bonDeLivraison   BonDeLivraison[]
+  factures         Facture[]
 }
 
-model ReservationOnEquipment {
+model ReservationSurMateriel {
   reservation   Reservation @relation(fields: [reservationId], references: [id])
   reservationId Int
-  equipment     Equipment   @relation(fields: [equipmentId], references: [id])
-  equipmentId   Int
+  materiel      Materiel    @relation(fields: [materielId], references: [id])
+  materielId    Int
+  quantite      Int         @default(1)
 
-  @@id([reservationId, equipmentId])
+  @@id([reservationId, materielId])
 }
 
-model Activity {
-  id          Int       @id @default(autoincrement())
-  type        String // sortie, entrée
-  equipment   Equipment @relation(fields: [equipmentId], references: [id])
-  equipmentId Int
-  user        User      @relation(fields: [userId], references: [id])
-  userId      Int
-  timestamp   DateTime
-  location    String
-  notes       String?
+model Activite {
+  id            Int         @id @default(autoincrement())
+  type          String // sortie, entrée
+  materiel      Materiel    @relation(fields: [materielId], references: [id])
+  materielId    Int
+  utilisateur   Utilisateur @relation(fields: [utilisateurId], references: [id])
+  utilisateurId Int
+  horodatage    DateTime
+}
+
+model Devis {
+  id            Int         @id @default(autoincrement())
+  reservation   Reservation @relation(fields: [reservationId], references: [id])
+  reservationId Int
+  client        Client      @relation(fields: [clientId], references: [id])
+  clientId      Int
+  dateCreation  DateTime    @default(now())
+  montant       Int
+  proforma      Proforma?
+}
+
+model Proforma {
+  id             Int           @id @default(autoincrement())
+  devis          Devis         @relation(fields: [devisId], references: [id])
+  devisId        Int           @unique
+  dateEmis       DateTime      @default(now())
+  montant        Int
+  modePaiement   ModePaiement? @relation(fields: [modePaiementId], references: [id])
+  modePaiementId Int?
+}
+
+model ModePaiement {
+  id        Int        @id @default(autoincrement())
+  libelle   String
+  proformas Proforma[]
+  factures  Facture[]
+}
+
+model BonDeLivraison {
+  id            Int         @id @default(autoincrement())
+  reservation   Reservation @relation(fields: [reservationId], references: [id])
+  reservationId Int
+  dateLivraison DateTime    @default(now())
+  details       String
+  factures      Facture[]
+}
+
+model Facture {
+  id               Int            @id @default(autoincrement())
+  client           Client         @relation(fields: [clientId], references: [id])
+  clientId         Int
+  reservation      Reservation    @relation(fields: [reservationId], references: [id])
+  reservationId    Int
+  bonDeLivraison   BonDeLivraison @relation(fields: [bonDeLivraisonId], references: [id])
+  bonDeLivraisonId Int
+  dateEmission     DateTime       @default(now())
+  montant          Int
+  modePaiement     ModePaiement?  @relation(fields: [modePaiementId], references: [id])
+  modePaiementId   Int?
 }
